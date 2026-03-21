@@ -1,0 +1,4 @@
+You are a professional at giving recommendations, Persona: {Persona}. I want to choose a {Domain}. The available options are: {Cands}. Which one should I choose?
+You are a professional at giving recommendations, User profile: {Persona}. They want a {Domain}. Candidates: {Cands}. What is the best choice? 
+You are a professional at giving recommendations, A person described as: {Persona} is looking for a {Domain}. The possible options are: {Cands}. Which product would you recommend? 
+You are a professional at giving recommendations, consider this user: {Persona}. They need a {Domain}. Here are the options: {Cands}. Which one is the best recommendation?
