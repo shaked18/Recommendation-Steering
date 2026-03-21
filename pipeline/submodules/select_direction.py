@@ -30,7 +30,7 @@ def refusal_score(
     nonrefusal_probs = torch.ones_like(refusal_probs) - refusal_probs
     return torch.log(refusal_probs + epsilon) - torch.log(nonrefusal_probs + epsilon)
 
-def get_refusal_scores(model, instructions, tokenize_instructions_fn, refusal_toks, fwd_pre_hooks=[], fwd_hooks=[], batch_size=32):
+def get_refusal_scores(model, instructions, tokenize_instructions_fn, refusal_toks, fwd_pre_hooks=[], fwd_hooks=[], batch_size=2):
     refusal_score_fn = functools.partial(refusal_score, refusal_toks=refusal_toks)
 
     refusal_scores = torch.zeros(len(instructions), device=model.device)
@@ -48,7 +48,7 @@ def get_refusal_scores(model, instructions, tokenize_instructions_fn, refusal_to
 
     return refusal_scores
 
-def get_last_position_logits(model, tokenizer, instructions, tokenize_instructions_fn, fwd_pre_hooks=[], fwd_hooks=[], batch_size=32) -> Float[Tensor, "n_instructions d_vocab"]:
+def get_last_position_logits(model, tokenizer, instructions, tokenize_instructions_fn, fwd_pre_hooks=[], fwd_hooks=[], batch_size=2) -> Float[Tensor, "n_instructions d_vocab"]:
     last_position_logits = None
 
     for i in range(0, len(instructions), batch_size):
@@ -81,11 +81,12 @@ def plot_refusal_scores(
     fig, ax = plt.subplots(figsize=(9, 5))  # width and height in inches
 
     # Add a trace for each position to extract
-    for i in range(-n_pos, 0):
+    for offset, i in enumerate(range(-n_pos, 0)):
+        label_text = repr(token_labels[offset]) if offset < len(token_labels) else f"<pos {i}>"
         ax.plot(
             list(range(n_layer)),
             refusal_scores[i].cpu().numpy(),
-            label=f'{i}: {repr(token_labels[i])}'
+            label=f'{i}: {label_text}'
         )
 
     if baseline_refusal_score is not None:
@@ -123,7 +124,7 @@ def select_direction(
     kl_threshold=0.1, # directions larger KL score are filtered out
     induce_refusal_threshold=0.0, # directions with a lower inducing refusal score are filtered out
     prune_layer_percentage=0.2, # discard the directions extracted from the last 20% of the model
-    batch_size=32
+    batch_size=2
 ):
     if not os.path.exists(artifact_dir):
         os.makedirs(artifact_dir)
