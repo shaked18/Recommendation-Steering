@@ -1,8 +1,10 @@
 
+import os
+
 from prompt_toolkit import prompt
 import torch
 import pandas as pd
-
+import logging
 
 from pipeline.utils.hook_utils import get_activation_addition_input_pre_hook
 from pipeline.model_utils.model_factory import construct_model_base
@@ -17,6 +19,7 @@ from config import (
     DIRECTIONS_DIR,
     DOMAIN,
     MAX_NEW_TOKENS,
+    OUTPUT_DIR,
 )
 
 
@@ -41,7 +44,7 @@ def generate_text(model_base, prompt, max_new_tokens=80):
 
 def main():
     model_base = construct_model_base(MODEL_NAME)
-
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     products_df = pd.read_csv(PRODUCTS_FILE)
     domain_items = products_df[products_df["Domain"] == DOMAIN]["Name"].dropna().tolist()
 
@@ -49,7 +52,12 @@ def main():
         raise ValueError(f"No items found for domain: {DOMAIN}")
 
     item_name = domain_items[0]
-
+    logging.basicConfig(
+        filename=os.path.join(OUTPUT_DIR,f"{item_name}_generation.log"), 
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s"
+    )
+    logging.info(f"Starting direction calculation for item: {item_name}")
     print(f"Running direction calculation for first item: {item_name}")
     
     layer = 0
@@ -75,8 +83,11 @@ def main():
 
     test_prompt = prompts[0]
     test_prompt = f"{test_prompt} The ranking of the top 5 is:"
+    logging.info(f"Using test prompt: {test_prompt}")
+
 
     print("Generating text without steering...")
+    logging.info("Generating text without steering...")
     print(test_prompt)
     completions_baseline = model_base.generate_completions(
                                                         format_prompt(test_prompt), 
@@ -85,6 +96,7 @@ def main():
                                                         max_new_tokens=MAX_NEW_TOKENS)
     response = completions_baseline[0]['response']
     print("\n=== BASELINE ===")
+    logging.info(f"Baseline response: {response}")
     print(response)
 
     
@@ -95,6 +107,7 @@ def main():
                                                         max_new_tokens=MAX_NEW_TOKENS)
     response = completions_ablation[0]['response']
     print("\n=== STEERED ABLATION ===")
+    logging.info(f"Steered ablation response: {response}")
     print(response)
 
     completions_ablation = model_base.generate_completions(
@@ -104,6 +117,7 @@ def main():
                                                         max_new_tokens=MAX_NEW_TOKENS)
     response = completions_ablation[0]['response']
     print("\n=== STEERED ABLATION ===")
+    logging.info(f"Steered activation addition response: {response}")
     print(response)
 
     
