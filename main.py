@@ -52,16 +52,18 @@ def main():
         raise ValueError(f"No items found for domain: {DOMAIN}")
 
     item_name = domain_items[0]
+
     logging.basicConfig(
         filename=os.path.join(OUTPUT_DIR,f"{item_name}_generation.log"), 
+        filemode="w",
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
     logging.info(f"Starting direction calculation for item: {item_name}")
     print(f"Running direction calculation for first item: {item_name}")
     
-    layer = 0
-    layer , direction = calculate_directions(
+    layer = 6
+    direction = calculate_directions(
         model_base=model_base,
         item_name=item_name,
         domain=DOMAIN,
@@ -69,6 +71,7 @@ def main():
         personas_dir=PERSONAS_FILE,
         prompt_dir=PROMPTS_FILE,
         save_dir=DIRECTIONS_DIR,
+        layer=layer
     )
     baseline_fwd_pre_hooks, baseline_fwd_hooks = [], []
     ablation_fwd_pre_hooks, ablation_fwd_hooks = get_all_direction_ablation_hooks(model_base, direction)
@@ -82,7 +85,7 @@ def main():
     )
 
     test_prompt = prompts[0]
-    test_prompt = f"{test_prompt} The ranking of the top 5 is:"
+    # test_prompt = f"{test_prompt} The ranking of the top 5 is:"
     logging.info(f"Using test prompt: {test_prompt}")
 
 
