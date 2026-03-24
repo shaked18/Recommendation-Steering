@@ -55,13 +55,16 @@ def parse_ranking(raw_text: str, candidates: List[str]) -> pd.DataFrame:
     for rank, item in extracted:
         matched = _match_candidate(item, candidates)
         if matched is not None and matched not in seen:
-            rows.append({"rank": rank, "product": matched})
+            rows.append({"rank": int(rank), "product": matched})
             seen.add(matched)
 
     if rows:
         df = pd.DataFrame(rows).sort_values("rank").reset_index(drop=True)
     else:
-        df = pd.DataFrame(columns=["rank", "product"])
+        df = pd.DataFrame({
+            "rank": pd.Series(dtype="int64"),
+            "product": pd.Series(dtype="string"),
+        })
 
     df["valid"] = len(df) > 0
     return df
@@ -89,7 +92,18 @@ def _coverage(df, candidates):
 
 
 def _top_k(df, k):
-    return set(df.nsmallest(k, "rank")["product"])
+    if df.empty or "rank" not in df.columns:
+        return set()
+
+    rank_series = pd.to_numeric(df["rank"], errors="coerce")
+    tmp = df.copy()
+    tmp["rank"] = rank_series
+    tmp = tmp.dropna(subset=["rank"])
+
+    if tmp.empty:
+        return set()
+
+    return set(tmp.nsmallest(k, "rank")["product"])
 
 
 def _jaccard(df1, df2, k):
