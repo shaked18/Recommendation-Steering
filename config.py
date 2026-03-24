@@ -5,5 +5,5 @@ PROMPTS_FILE = "./data/prompts.txt"
 DIRECTIONS_DIR = "./directions"
 METRICS_DIR = "./metrics"
 DOMAIN = "Smart Phones"
-MAX_NEW_TOKENS = 1000
+MAX_NEW_TOKENS = 300
 OUTPUT_DIR = "./outputs"

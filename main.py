@@ -64,12 +64,13 @@ def main():
     if not domain_items:
         raise ValueError(f"No items found for domain: {DOMAIN}")
 
-    for item_name in domain_items:  # Process only the first item for now
+    for item_name in domain_items[:3]:  # Process only the first item for now
 
         logging.basicConfig(
             filename=os.path.join(OUTPUT_DIR,f"{item_name}_generation.log"), 
             filemode="w",
             level=logging.INFO,
+            force=True,
             format="%(asctime)s - %(levelname)s - %(message)s"
         )
         logging.info(f"Starting direction calculation for item: {item_name}")
@@ -133,10 +134,14 @@ def main():
         example_prompt = f"""{example_prompt}\n{addidtion}"""
         len_p = len(prompts_ranking)
         records = []
-        for p in prompts_ranking[:50]:
+        amount = 50
+        i = 1
+        for p in prompts_ranking[:amount]:
             p = f"""{p}\n{addidtion}"""
-            print("Generating text without steering...")
-            logging.info("Generating text without steering...")
+            print(f"Generating text without steering... (Example {i}/{amount}) on item {item_name}")
+            i += 1
+
+            logging.info(f"Generating text without steering... (Example {i}/{amount}) on item {item_name}")
             completions_baseline = model_base.generate_completions(
                                                                 format_prompt(p), 
                                                                 fwd_pre_hooks=baseline_fwd_pre_hooks,
@@ -147,7 +152,7 @@ def main():
             logging.info(f"Baseline response: {response_baseline}")
             print(response_baseline)
 
-            
+                
             completions_ablation = model_base.generate_completions(
                                                                 format_prompt(p),
                                                                 fwd_pre_hooks=ablation_fwd_pre_hooks,
@@ -176,6 +181,8 @@ def main():
                 "ablation_output": response_ablation,
                 "actadd_output": response_actadd
             })   
+        print(f"Evaluating results for item: {item_name}")
+        logging.info(f"Evaluating results for item: {item_name}")
         results = evaluate_dataset(records)
         save_path = os.path.join(METRICS_DIR, MODEL_NAME.replace("/", "_"))
         save_path = os.path.join(save_path, f"{item_name}_results")
@@ -197,6 +204,9 @@ def main():
         results["mean_pairwise"].to_csv(
             os.path.join(save_path, "mean_pairwise.csv")
         )
+        print(f"Finished processing item: {item_name}")
+        logging.info(f"Finished processing item: {item_name}")
+
 
 
     
