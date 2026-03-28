@@ -17,24 +17,21 @@ from config import (
 
 def run_exp1(model_base, domain):
     """
-    מריץ את ניסוי 1: הכוונת המודל להמליץ על מוצר יעד (p) מתוך קבוצה של 10 מוצרים,
-    ובדיקת השפעת ההכוונה על הדירוג שלו לעומת שאר המוצרים.
+    Runs Experiment 1: Steering the model to recommend a target product (p) from a group of 10 products,
+    and evaluating the effect of the steering on its ranking compared to the other products.
     """
-    # 1. טעינת כל המוצרים תחת הדומיין המבוקש
+
+    # 1. Load all products under the requested domain
     domain_items = load_domain_items(PRODUCTS_FILE, domain)
-    #remove after testing
-    domain_items = domain_items[:1]
+    domain_items = domain_items[:1] #remove after testing
 
-    # 2. ריצה על כל מוצר כמוצר מטרה
-    for item_name in domain_items:
-        
-        # אתחול תיקיות ולוגים מתוך הפונקציה הכללית (מייצר v01, v02 וכו')
+    # 2. Iterate over each product as a target product
+    for item_name in domain_items:         
         save_path, v_str = setup_experiment_logger_and_dirs(item_name, experiment_name="exp1")
-        
         logging.info(f"Starting Experiment 1 for item: {item_name} (Version {v_str})")
-        print(f"🚀 Running Exp1 for: {item_name} (Version: {v_str})")
+        print(f"Running Exp1 for: {item_name} (Version: {v_str})")
 
-        # 3. הכנת הנתונים לחישוב הוקטור
+        # 3. Prepare data for vector calculation
         prompts = get_data(
             item_name=item_name,
             domain=domain,
@@ -43,8 +40,8 @@ def run_exp1(model_base, domain):
             prompt_file=PROMPTS_FILE,
         )
         
-        # 4. חישוב וקטור הכיוון (Steering Direction)
-        layer = 6
+        # 4. Calculate steering direction vector
+        layer = len(model_base.model_block_modules) - 2  #second to last layer
         direction = calculate_directions(
             model_base=model_base,
             item_name=item_name,
@@ -54,14 +51,13 @@ def run_exp1(model_base, domain):
             layer=layer
         )
 
-        # הגדרת ה-Hooks לשלושת המצבים
         baseline_fwd_pre_hooks, baseline_fwd_hooks = [], []
         ablation_fwd_pre_hooks, ablation_fwd_hooks = get_all_direction_ablation_hooks(model_base, direction)
         actadd_fwd_pre_hooks, actadd_fwd_hooks = [
             (model_base.model_block_modules[layer], get_activation_addition_input_pre_hook(vector=direction, coeff=-0.3))
         ], []
 
-        # 5. הכנת נתוני ההערכה (Evaluation)
+        # 5. Prepare evaluation data
         prompts_ranking = get_data(
             item_name=item_name,
             domain=domain,
@@ -70,7 +66,6 @@ def run_exp1(model_base, domain):
             prompt_file="./data/prompts_ranking.txt",
         )
 
-        # הוראות הקשחה ספציפיות לניסוי 1
         addition = """ return:
                     - Exactly 10 items, and only the one that are in the candidates list.
                     - Ranked from best to worst
@@ -97,7 +92,7 @@ def run_exp1(model_base, domain):
 
         records = []
         
-        # 6. יצירת הטקסטים ב-3 תצורות שונות לכל פרומפט
+        # 6. Generate texts in 3 different configurations for each prompt
         for p in prompts_ranking[:50]:
             p_full = f"{p}\n{addition}"
             
@@ -143,13 +138,11 @@ def run_exp1(model_base, domain):
                 "actadd_output": response_actadd
             })   
             
-        # 7. הערכה ושמירת תוצאות בנתיב שהוקצה לגרסה הנוכחית
+        # 7. Evaluate and save results in the path assigned to the current version
         logging.info("Evaluating results...")
         results = evaluate_dataset(records)
-        
         results["per_example"].to_csv(os.path.join(save_path, "per_example.csv"), index=False)
         results["pairwise"].to_csv(os.path.join(save_path, "pairwise.csv"), index=False)
         results["mean_per_method"].to_csv(os.path.join(save_path, "mean_per_method.csv"))
         results["mean_pairwise"].to_csv(os.path.join(save_path, "mean_pairwise.csv"))
-        
-        print(f"✅ Finished Exp1 for {item_name}. Results saved to {save_path}\n")
+        print(f"Finished Exp1 for {item_name}. Results saved to {save_path}\n")
