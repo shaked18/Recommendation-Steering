@@ -1,8 +1,8 @@
 import argparse
 from experiments.exp1 import run_exp1
 from experiments.exp2 import run_exp2
+from experiments.exp3 import run_exp3
 
-# ייבוא טעינת המודל הכללית
 from pipeline.model_utils.model_factory import construct_model_base
 from config import MODEL_NAME
 
@@ -18,9 +18,11 @@ def main():
         model_base = construct_model_base(MODEL_NAME)
 
     if args.exp == 1:
-        run_exp1(model_base, args.domain)
+        run_exp1(model_base, args.steer_domain)
     elif args.exp == 2:
         run_exp2(model_base, args.steer_domain, args.eval_domain)
+    elif args.exp == 3:
+        run_exp3(model_base, args.steer_domain)
     else:
         print("Invalid experiment number.")
 
