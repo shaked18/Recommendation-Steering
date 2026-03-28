@@ -65,13 +65,28 @@ def main():
         raise ValueError(f"No items found for domain: {DOMAIN}")
 
     for item_name in domain_items[:3]:  # Process only the first item for now
+        item_output_dir = os.path.join(OUTPUT_DIR, item_name)
+        item_metrics_dir = os.path.join(METRICS_DIR, MODEL_NAME.replace("/", "_"), item_name)
+        
+        os.makedirs(item_output_dir, exist_ok=True)
+        os.makedirs(item_metrics_dir, exist_ok=True)
+
+        version = 1
+        while (os.path.exists(os.path.join(item_output_dir, f"v{version:02d}.log")) or
+              os.path.exists(os.path.join(item_metrics_dir, f"v{version:02d}"))):
+            version += 1
+        
+        v_str = f"v{version:02d}"
+
+        log_filename = os.path.join(item_output_dir, f"{v_str}.log")
+        save_path = os.path.join(item_metrics_dir, v_str) 
 
         logging.basicConfig(
-            filename=os.path.join(OUTPUT_DIR,f"{item_name}_generation.log"), 
+            filename=log_filename, 
             filemode="w",
             level=logging.INFO,
-            force=True,
-            format="%(asctime)s - %(levelname)s - %(message)s"
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            force=True 
         )
         logging.info(f"Starting direction calculation for item: {item_name}")
         print(f"Running direction calculation for first item: {item_name}")
@@ -184,8 +199,8 @@ def main():
         print(f"Evaluating results for item: {item_name}")
         logging.info(f"Evaluating results for item: {item_name}")
         results = evaluate_dataset(records)
-        save_path = os.path.join(METRICS_DIR, MODEL_NAME.replace("/", "_"))
-        save_path = os.path.join(save_path, f"{item_name}_results")
+        # save_path = os.path.join(METRICS_DIR, MODEL_NAME.replace("/", "_"))
+        # save_path = os.path.join(save_path, f"{item_name}_results")
         os.makedirs(save_path, exist_ok=True)
         results["per_example"].to_csv(
         os.path.join(save_path, "per_example.csv"),
