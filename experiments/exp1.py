@@ -15,15 +15,14 @@ from config import (
     MAX_NEW_TOKENS
 )
 
-def run_exp1(model_base, domain):
+def run_exp1(model_base, steer_domain):
     """
     Runs Experiment 1: Steering the model to recommend a target product (p) from a group of 10 products,
     and evaluating the effect of the steering on its ranking compared to the other products.
     """
 
     # 1. Load all products under the requested domain
-    domain_items = load_domain_items(PRODUCTS_FILE, domain)
-    domain_items = domain_items[:1] #remove after testing
+    domain_items = load_domain_items(PRODUCTS_FILE, steer_domain)
 
     # 2. Iterate over each product as a target product
     for item_name in domain_items:         
@@ -34,7 +33,7 @@ def run_exp1(model_base, domain):
         # 3. Prepare data for vector calculation
         prompts = get_data(
             item_name=item_name,
-            domain=domain,
+            domain=steer_domain,
             personas_file=PERSONAS_FILE,
             items_file=PRODUCTS_FILE,
             prompt_file=PROMPTS_FILE,
@@ -60,7 +59,7 @@ def run_exp1(model_base, domain):
         # 5. Prepare evaluation data
         prompts_ranking = get_data(
             item_name=item_name,
-            domain=domain,
+            domain=steer_domain,
             personas_file=PERSONAS_FILE,
             items_file=PRODUCTS_FILE,
             prompt_file="./data/prompts_ranking.txt",
@@ -130,7 +129,7 @@ def run_exp1(model_base, domain):
             logging.info(f"ActAdd response: {response_actadd}")
 
             records.append({
-                "domain": domain,
+                "domain": steer_domain,
                 "target_item": item_name,  
                 "candidates": domain_items,
                 "baseline_output": response_baseline,
