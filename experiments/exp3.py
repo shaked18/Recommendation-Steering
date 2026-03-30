@@ -64,8 +64,7 @@ def run_exp3(model_base, domain):
             prompt_file="./data/prompts_ranking.txt",
         )
 
-        candidates_str = ", ".join(full_domain_items)
-        addition = f""" return:
+        addition = """ return:
                     - Exactly 10 items, and only the one that are in the candidates list.
                     - Ranked from best to worst
                     - Dont explain you rankings, just return the list of items in the format shown below, dont include any text other than the list of items.
@@ -73,21 +72,21 @@ def run_exp3(model_base, domain):
 
                     Example 1:
                     User profile: Loves sci-fi, complex plots, and philosophical themes. Dislikes romance-heavy stories.
-                    Domain: {domain}
-                    Candidates: {candidates_str}
+                    Domain: movies
+                    Candidates: Interstellar, The Notebook, Blade Runner 2049, Fast & Furious, Ex Machina, Titanic, The Maze Runner, The Godfather, The Shawshank Redemption, Inception
 
                     Your Answer: 
-                    Top 10 {domain}:
-                    1. {full_domain_items[0]}
-                    2. {full_domain_items[1]}
-                    3. {full_domain_items[2]}
-                    4. {full_domain_items[3]}
-                    5. {full_domain_items[4]}
-                    6. {full_domain_items[5]}
-                    7. {full_domain_items[6]}
-                    8. {full_domain_items[7]}
-                    9. {full_domain_items[8]}
-                    10. {full_domain_items[9]}"""
+                    Top 10 movies:
+                    1. Blade Runner 2049
+                    2. Interstellar
+                    3. Inception
+                    4. The Maze Runner
+                    5. Titanic
+                    6. The Notebook
+                    7. Fast & Furious
+                    8. The Godfather
+                    9. The Shawshank Redemption
+                    10. Ex Machina"""
 
         # 5. Generate BASELINE responses ONLY ONCE before the alpha loop
         baseline_responses = []

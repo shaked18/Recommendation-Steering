@@ -78,11 +78,8 @@ def run_exp2(model_base, steer_domain, eval_domain):
             prompt_file="./data/prompts_ranking.txt",
         )
 
-        # Format candidates string for the evaluation domain dynamically
-        candidates_str = ", ".join(eval_domain_items)
-
         # Strict formatting instructions focused on the EVALUATION domain
-        addition = f""" return:
+        addition = """ return:
                     - Exactly 10 items, and only the one that are in the candidates list.
                     - Ranked from best to worst
                     - Dont explain you rankings, just return the list of items in the format shown below, dont include any text other than the list of items.
@@ -90,21 +87,21 @@ def run_exp2(model_base, steer_domain, eval_domain):
 
                     Example 1:
                     User profile: Loves sci-fi, complex plots, and philosophical themes. Dislikes romance-heavy stories.
-                    Domain: {eval_domain}
-                    Candidates: {candidates_str}
+                    Domain: movies
+                    Candidates: Interstellar, The Notebook, Blade Runner 2049, Fast & Furious, Ex Machina, Titanic, The Maze Runner, The Godfather, The Shawshank Redemption, Inception
 
                     Your Answer: 
-                    Top 10 {eval_domain}:
-                    1. {eval_domain_items[0] if len(eval_domain_items) > 0 else 'Item 1'}
-                    2. {eval_domain_items[1] if len(eval_domain_items) > 1 else 'Item 2'}
-                    3. {eval_domain_items[2] if len(eval_domain_items) > 2 else 'Item 3'}
-                    4. {eval_domain_items[3] if len(eval_domain_items) > 3 else 'Item 4'}
-                    5. {eval_domain_items[4] if len(eval_domain_items) > 4 else 'Item 5'}
-                    6. {eval_domain_items[5] if len(eval_domain_items) > 5 else 'Item 6'}
-                    7. {eval_domain_items[6] if len(eval_domain_items) > 6 else 'Item 7'}
-                    8. {eval_domain_items[7] if len(eval_domain_items) > 7 else 'Item 8'}
-                    9. {eval_domain_items[8] if len(eval_domain_items) > 8 else 'Item 9'}
-                    10. {eval_domain_items[9] if len(eval_domain_items) > 9 else 'Item 10'}"""
+                    Top 10 movies:
+                    1. Blade Runner 2049
+                    2. Interstellar
+                    3. Inception
+                    4. The Maze Runner
+                    5. Titanic
+                    6. The Notebook
+                    7. Fast & Furious
+                    8. The Godfather
+                    9. The Shawshank Redemption
+                    10. Ex Machina"""
 
         records = []
         
