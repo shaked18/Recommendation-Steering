@@ -11,7 +11,7 @@ from pipeline.model_utils.model_factory import construct_model_base
 from pipeline.utils.hook_utils import get_activation_addition_input_pre_hook, get_all_direction_ablation_hooks
 from direction import calculate_directions
 from dataset import get_data
-from evaluator import evaluate_dataset
+from evaluator import evaluate_dataset, evaluate_one
 from config import (
     MODEL_NAME,
     PRODUCTS_FILE,
@@ -64,7 +64,7 @@ def main():
     if not domain_items:
         raise ValueError(f"No items found for domain: {DOMAIN}")
 
-    for item_name in domain_items[:3]:  # Process only the first item for now
+    for item_name in domain_items:  # Process only the first item for now
 
         logging.basicConfig(
             filename=os.path.join(OUTPUT_DIR,f"{item_name}_generation.log"), 
@@ -95,7 +95,7 @@ def main():
 
         baseline_fwd_pre_hooks, baseline_fwd_hooks = [], []
         ablation_fwd_pre_hooks, ablation_fwd_hooks = get_all_direction_ablation_hooks(model_base, direction)
-        actadd_fwd_pre_hooks, actadd_fwd_hooks = [(model_base.model_block_modules[layer], get_activation_addition_input_pre_hook(vector=direction, coeff=-0.3))], []
+        actadd_fwd_pre_hooks, actadd_fwd_hooks = [(model_base.model_block_modules[layer], get_activation_addition_input_pre_hook(vector=direction, coeff=-0.05))], []
 
 
         prompts_ranking = get_data(
@@ -107,36 +107,20 @@ def main():
         )
     
 
-        addidtion = """ return:
+        addidtion = """ return an output that fits the following requirements:
+                    - Start you answer with "The top 10 is:"
                     - Exactly 10 items, and only the one that are in the candidates list.
                     - Ranked from best to worst
-                    - Dont explain you rankings, just return the list of items in the format shown below, dont include any text other than the list of items.
-                    ---
-
-                    Example 1:
-                    User profile: Loves sci-fi, complex plots, and philosophical themes. Dislikes romance-heavy stories.
-                    Domain: movies
-                    Candidates: Interstellar, The Notebook, Blade Runner 2049, Fast & Furious, Ex Machina, Titanic, The Maze Runner, The Godfather, The Shawshank Redemption, Inception
-
-                    Your Answer: 
-                    Top 10 movies:
-                    1. Blade Runner 2049
-                    2. Interstellar
-                    3. Inception
-                    4. The Maze Runner
-                    5. Titanic""
-                    6. The Notebook
-                    7. Fast & Furious
-                    8. The Godfather
-                    9. The Shawshank Redemption
-                    10. Ex Machina"""
+                    - 1 sentence explaning the rang you gave
+                    - Enumarate your rankings from 1 to 10, and separate them with a new line"""
         example_prompt = prompts_ranking[0]
         example_prompt = f"""{example_prompt}\n{addidtion}"""
         len_p = len(prompts_ranking)
         records = []
-        amount = 50
+        amount = 20
         i = 1
         for p in prompts_ranking[:amount]:
+            print(p)
             p = f"""{p}\n{addidtion}"""
             print(f"Generating text without steering... (Example {i}/{amount}) on item {item_name}")
             i += 1

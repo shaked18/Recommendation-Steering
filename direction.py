@@ -19,14 +19,19 @@ def build_forced_prompts(prompts, target_item, items):
     # neg_index = 0
 
     for p in prompts:
-        pos = p + f"\nAnswer: The best choice is{target_item}"
-        positives.append(pos)
-
+        positives.append({
+            "instruction": p,
+            "output": f"{target_item} {target_item} {target_item} {target_item}"
+        })
 
         # other = others[neg_index % len(others)]
-        neg = p + f"\nAnswer: The best choice is not {target_item}"
-        negatives.append(neg)
+        negatives.append({
+            "instruction": p,
+            "output": ""
+        })
+
         # neg_index += 1
+
 
     return positives, negatives
 

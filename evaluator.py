@@ -7,6 +7,31 @@ import pandas as pd
 # =========================
 # PARSER
 # =========================
+def extract_scores(raw_text, candidates):
+    scores = {}
+
+    for cand in candidates:
+        # match patterns like: "iPhone 14 Pro (Score: 9.5/10)"
+        pattern = rf"{re.escape(cand)}.*?\(?\s*score[:\s]*([0-9]+\.?[0-9]*)"
+        match = re.search(pattern, raw_text, re.IGNORECASE)
+
+        if match:
+            scores[cand] = float(match.group(1))
+
+    return scores
+
+
+def scores_to_ranking(scores):
+    # sort descending by score
+    sorted_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+
+    rows = []
+    for i, (product, score) in enumerate(sorted_items, start=1):
+        rows.append({"rank": i, "product": product})
+
+    import pandas as pd
+    return pd.DataFrame(rows)
+
 
 def _normalize(text: str) -> str:
     text = text.lower().strip()
@@ -45,6 +70,13 @@ def _match_candidate(item: str, candidates: List[str]):
 
     return None
 
+def parse_with_scores(raw_text, candidates):
+    scores = extract_scores(raw_text, candidates)
+
+    if len(scores) >= 3:  # threshold to trust scores
+        return scores_to_ranking(scores), True  # True = used scores
+
+    return None, False
 
 def parse_ranking(raw_text: str, candidates: List[str]) -> pd.DataFrame:
     extracted = _extract_ranked_lines(raw_text)
@@ -68,6 +100,15 @@ def parse_ranking(raw_text: str, candidates: List[str]) -> pd.DataFrame:
 
     df["valid"] = len(df) > 0
     return df
+
+
+def parse_ranking_or_scores(raw_text, candidates, min_scored_items=3):
+    scores = extract_scores(raw_text, candidates)
+
+    if len(scores) >= min_scored_items:
+        return scores_to_ranking(scores)
+
+    return parse_ranking(raw_text, candidates)
 
 
 # =========================
@@ -143,7 +184,7 @@ def evaluate_one(domain, target_item, candidates,
         "actadd": actadd_output,
     }
 
-    parsed = {m: parse_ranking(t, candidates) for m, t in methods.items()}
+    parsed = {m: parse_ranking_or_scores(t, candidates) for m, t in methods.items()}
 
     # per method
     per_method = []

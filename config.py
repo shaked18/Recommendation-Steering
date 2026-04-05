@@ -1,9 +1,9 @@
-MODEL_NAME = "meta-llama/Llama-2-7b-chat-hf" #"google\gemma-2b-it" #"qwen2-7b-chat""
+MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct" #"google\gemma-2b-it" #"qwen2-7b-chat""
 PRODUCTS_FILE = "./data/products.csv"
 PERSONAS_FILE = "./data/persona.csv"
 PROMPTS_FILE = "./data/prompts.txt"
 DIRECTIONS_DIR = "./directions"
 METRICS_DIR = "./metrics"
 DOMAIN = "Smart Phones"
-MAX_NEW_TOKENS = 300
+MAX_NEW_TOKENS = 600
 OUTPUT_DIR = "./outputs"

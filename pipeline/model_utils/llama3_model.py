@@ -2,7 +2,7 @@
 import torch
 import functools
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from typing import List
 from torch import Tensor
 from jaxtyping import Int, Float
@@ -94,12 +94,17 @@ def act_add_llama3_weights(model, direction: Float[Tensor, "d_model"], coeff, la
 class Llama3Model(ModelBase):
 
     def _load_model(self, model_path, dtype=torch.bfloat16):
-
+        quant_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,   # use torch.float16 if bf16 isn't supported
+        )
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
-            torch_dtype=dtype,
             trust_remote_code=True,
-            device_map="auto",
+            quantization_config=quant_config,
+            low_cpu_mem_usage=True
         ).eval()
 
         model.requires_grad_(False) 

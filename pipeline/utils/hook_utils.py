@@ -41,7 +41,7 @@ def add_hooks(
 def get_direction_ablation_input_pre_hook(direction: Tensor):
     def hook_fn(module, input):
         nonlocal direction
-
+        alpha = 2.0
         if isinstance(input, tuple):
             activation: Float[Tensor, "batch_size seq_len d_model"] = input[0]
         else:
@@ -49,7 +49,7 @@ def get_direction_ablation_input_pre_hook(direction: Tensor):
 
         direction = direction / (direction.norm(dim=-1, keepdim=True) + 1e-8)
         direction = direction.to(activation) 
-        activation -= (activation @ direction).unsqueeze(-1) * direction 
+        activation -= alpha * ((activation @ direction).unsqueeze(-1) * direction)
 
         if isinstance(input, tuple):
             return (activation, *input[1:])
@@ -60,7 +60,7 @@ def get_direction_ablation_input_pre_hook(direction: Tensor):
 def get_direction_ablation_output_hook(direction: Tensor):
     def hook_fn(module, input, output):
         nonlocal direction
-
+        alpha = 1.0
         if isinstance(output, tuple):
             activation: Float[Tensor, "batch_size seq_len d_model"] = output[0]
         else:
@@ -68,7 +68,7 @@ def get_direction_ablation_output_hook(direction: Tensor):
 
         direction = direction / (direction.norm(dim=-1, keepdim=True) + 1e-8)
         direction = direction.to(activation)
-        activation -= (activation @ direction).unsqueeze(-1) * direction 
+        activation -= alpha * ((activation @ direction).unsqueeze(-1) * direction)
 
         if isinstance(output, tuple):
             return (activation, *output[1:])
