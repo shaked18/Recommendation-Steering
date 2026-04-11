@@ -1,0 +1,4 @@
+method,valid,coverage,target_rank,rr,hit@1,hit@5
+ablation,1.0,1.0,3.71,0.345,0.06,0.78
+actadd,1.0,1.0,3.3,0.379,0.08,0.82
+baseline,1.0,1.0,4.82,0.278,0.02,0.64

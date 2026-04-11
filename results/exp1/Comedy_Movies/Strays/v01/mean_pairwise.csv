@@ -1,0 +1,3 @@
+method,rank_delta,rr_delta,jaccard@5,pairwise_agreement
+ablation,1.12,0.03646,0.88,0.9154444444444446
+actadd,1.66,0.06844,0.853,0.932
