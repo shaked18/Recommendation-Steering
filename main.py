@@ -5,13 +5,13 @@ from experiments.exp3 import run_exp3
 from experiments.exp4 import run_exp4
 
 from pipeline.model_utils.model_factory import construct_model_base
-from config import MODEL_NAME
+from config import MODEL_NAME, DOMAIN
 
 def main():
     parser = argparse.ArgumentParser(description="Recommendation Steering Experiments")
     parser.add_argument("--exp", type=int, required=True, help="Experiment number to run (1-4)")
-    parser.add_argument("--steer_domain", type=str, default="Smartphones", help="Domain to extract vector from")
-    parser.add_argument("--eval_domain", type=str, default="Thriller Books", help="Domain to evaluate on")
+    parser.add_argument("--steer_domain", type=str, default="Thriller Books", help="Domain to extract vector from")
+    parser.add_argument("--eval_domain", type=str, default="Smart Phonesss", help="Domain to evaluate on")
     args = parser.parse_args()
 
     if args.exp in [1, 2, 3, 4]: 

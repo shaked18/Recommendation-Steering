@@ -1,4 +1,4 @@
-You are an expert in providing recommendations. Consider the next Persona: {Persona}. He wants to choose a {Domain}. The available options are: {Cands}. Take this options and rank them 1 to 10 {Domain}?
-You specialize in giving high-quality recommendations, Given the next user profile: {Persona}. They want a {Domain}. Candidates: {Cands}. Rank the best {Domain} from 1 to 10? 
-You are a skilled recommendation expert, A person described as: {Persona} is looking for a {Domain}. The possible options are: {Cands}. Give a list of the rankings of these {Domain}.
-You are highly proficient at making recommendations, consider this user: {Persona}. They need a {Domain}. Here are the options: {Cands}. Rank them 1 to 10.
+Consider the next Persona: {Persona}. He wants to choose a {Domain}. The available options are: {Cands}. Take this options and rank them 1 to 10 {Domain} based on performance?
+Given the next user profile: {Persona}. They want a {Domain}. Candidates: {Cands}. Based on the overall performance, rank these {Domain} best to worse from 1 to 10? 
+A person described as: {Persona} is looking for a {Domain}. The possible options are: {Cands}. Rank these {Domain} starting at the best option from 1 to 10.
+consider this user: {Persona}. They need a {Domain}. Here are the options: {Cands}. Rank them 1 to 10 from best to worse.

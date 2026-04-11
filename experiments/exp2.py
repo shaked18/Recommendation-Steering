@@ -64,7 +64,7 @@ def run_exp2(model_base, steer_domain, eval_domain):
         baseline_fwd_pre_hooks, baseline_fwd_hooks = [], []
         ablation_fwd_pre_hooks, ablation_fwd_hooks = get_all_direction_ablation_hooks(model_base, direction)
         actadd_fwd_pre_hooks, actadd_fwd_hooks = [
-            (model_base.model_block_modules[layer], get_activation_addition_input_pre_hook(vector=direction, coeff=-0.3))
+            (model_base.model_block_modules[layer], get_activation_addition_input_pre_hook(vector=direction, coeff=-0.1))
         ], []
 
         # 5. Prepare evaluation data (Using the EVALUATION domain!)
@@ -79,29 +79,12 @@ def run_exp2(model_base, steer_domain, eval_domain):
         )
 
         # Strict formatting instructions focused on the EVALUATION domain
-        addition = """ return:
+        addition = """ return an output that fits the following requirements:
+                    - Start you answer with "The top 10 is:"
                     - Exactly 10 items, and only the one that are in the candidates list.
                     - Ranked from best to worst
-                    - Dont explain you rankings, just return the list of items in the format shown below, dont include any text other than the list of items.
-                    ---
-
-                    Example 1:
-                    User profile: Loves sci-fi, complex plots, and philosophical themes. Dislikes romance-heavy stories.
-                    Domain: movies
-                    Candidates: Interstellar, The Notebook, Blade Runner 2049, Fast & Furious, Ex Machina, Titanic, The Maze Runner, The Godfather, The Shawshank Redemption, Inception
-
-                    Your Answer: 
-                    Top 10 movies:
-                    1. Blade Runner 2049
-                    2. Interstellar
-                    3. Inception
-                    4. The Maze Runner
-                    5. Titanic
-                    6. The Notebook
-                    7. Fast & Furious
-                    8. The Godfather
-                    9. The Shawshank Redemption
-                    10. Ex Machina"""
+                    - 1 sentence explaning the rang you gave
+                    - Enumarate your rankings from 1 to 10, and separate them with a new line"""
 
         records = []
         
@@ -141,8 +124,7 @@ def run_exp2(model_base, steer_domain, eval_domain):
 
             # Save the record, noting both domains used
             records.append({
-                "steer_domain": steer_domain,
-                "eval_domain": eval_domain,
+                "domain": eval_domain,
                 "target_item": item_name,  
                 "candidates": eval_domain_items, # Validating against the EVAL domain candidates
                 "baseline_output": response_baseline,
@@ -155,7 +137,7 @@ def run_exp2(model_base, steer_domain, eval_domain):
         
         # evaluate_dataset will check the pairwise ordering of the EVAL items 
         # to see if the steering vector disrupted their natural ranking.
-        results = evaluate_dataset(records)
+        results = evaluate_dataset(records, experiment=2)
         results["per_example"].to_csv(os.path.join(save_path, "per_example.csv"), index=False)
         results["pairwise"].to_csv(os.path.join(save_path, "pairwise.csv"), index=False)
         results["mean_per_method"].to_csv(os.path.join(save_path, "mean_per_method.csv"))

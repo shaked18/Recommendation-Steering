@@ -27,7 +27,7 @@ def run_exp3(model_base, domain):
     target_items = full_domain_items[:3] 
 
     # Define the range of alpha values to test (from negative to strong positive)
-    alpha_values = [-1.0, -0.5, -0.3, -0.1, 0.0, 0.1, 0.3, 0.5, 1.0]
+    alpha_values = [-0.3, -0.25, -0.2, -0.15, -0.1, -0.05, 0]
 
     # 2. Iterate over the 3 target products
     for item_name in target_items:         
@@ -64,29 +64,12 @@ def run_exp3(model_base, domain):
             prompt_file="./data/prompts_ranking.txt",
         )
 
-        addition = """ return:
+        addition = """ return an output that fits the following requirements:
+                    - Start you answer with "The top 10 is:"
                     - Exactly 10 items, and only the one that are in the candidates list.
                     - Ranked from best to worst
-                    - Dont explain you rankings, just return the list of items in the format shown below, dont include any text other than the list of items.
-                    ---
-
-                    Example 1:
-                    User profile: Loves sci-fi, complex plots, and philosophical themes. Dislikes romance-heavy stories.
-                    Domain: movies
-                    Candidates: Interstellar, The Notebook, Blade Runner 2049, Fast & Furious, Ex Machina, Titanic, The Maze Runner, The Godfather, The Shawshank Redemption, Inception
-
-                    Your Answer: 
-                    Top 10 movies:
-                    1. Blade Runner 2049
-                    2. Interstellar
-                    3. Inception
-                    4. The Maze Runner
-                    5. Titanic
-                    6. The Notebook
-                    7. Fast & Furious
-                    8. The Godfather
-                    9. The Shawshank Redemption
-                    10. Ex Machina"""
+                    - 1 sentence explaning the rang you gave
+                    - Enumarate your rankings from 1 to 10, and separate them with a new line"""
 
         # 5. Generate BASELINE responses ONLY ONCE before the alpha loop
         baseline_responses = []
@@ -132,7 +115,7 @@ def run_exp3(model_base, domain):
                     "domain": domain,
                     "target_item": item_name,  
                     "candidates": full_domain_items,
-                    "alpha": alpha,
+                    "coeff": alpha,
                     "baseline_output": baseline_responses[idx], # Fetched directly from memory!
                     "actadd_output": response_actadd,
                     "ablation_output": baseline_responses[idx] # Passed as dummy to prevent evaluator crashes
@@ -142,8 +125,10 @@ def run_exp3(model_base, domain):
             alpha_dir = os.path.join(save_path, f"alpha_{alpha}")
             os.makedirs(alpha_dir, exist_ok=True)
 
-            results = evaluate_dataset(records)
+            results = evaluate_dataset(records, experiment=3)
+            results["pairwise"].to_csv(os.path.join(alpha_dir, "pairwise.csv"), index=False)
             results["per_example"].to_csv(os.path.join(alpha_dir, "per_example.csv"), index=False)
             results["mean_per_method"].to_csv(os.path.join(alpha_dir, "mean_per_method.csv"))
+            results["mean_pairwise"].to_csv(os.path.join(alpha_dir, "mean_pairwise.csv"))
             
         print(f"Finished Exp3 for {item_name}. Results saved to {save_path}\n")

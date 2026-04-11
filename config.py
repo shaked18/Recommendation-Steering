@@ -1,4 +1,4 @@
-MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct" #"google\gemma-2b-it" #"qwen2-7b-chat""
+MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3" #"google\gemma-2b-it" #"Qwen/Qwen2.5-7B-Instruct"" "mistralai/Mistral-7B-Instruct-v0.2" meta-llama/Llama-3.1-8B-Instruct
 PRODUCTS_FILE = "./data/products.csv"
 PERSONAS_FILE = "./data/persona.csv"
 PROMPTS_FILE = "./data/prompts.txt"

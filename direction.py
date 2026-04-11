@@ -21,7 +21,7 @@ def build_forced_prompts(prompts, target_item, items):
     for p in prompts:
         positives.append({
             "instruction": p,
-            "output": f"{target_item} {target_item} {target_item} {target_item}"
+            "output": f"{target_item}"
         })
 
         # other = others[neg_index % len(others)]
@@ -51,6 +51,6 @@ def calculate_directions(model_base, item_name, items, prompts, save_dir, layer)
                 artifact_dir=os.path.join(save_direction(item_name, save_dir), "generate_directions"))
     torch.save(candidate_direction, os.path.join(save_direction(item_name, save_dir), "candidate_directions"))
     
-    direction = select_direction(candidate_direction, (model_base.model.config.num_hidden_layers-1))
+    direction = select_direction(candidate_direction, (model_base.model.config.num_hidden_layers-2))
     torch.save(direction, os.path.join(save_direction(item_name, save_dir), "final_direction.pt"))
     return direction

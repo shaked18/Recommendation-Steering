@@ -13,10 +13,9 @@ def setup_experiment_logger_and_dirs(item_name, experiment_name):
     """
     # יצירת היררכיה שכוללת גם את שם הניסוי כדי להפריד תוצאות
     item_output_dir = os.path.join(OUTPUT_DIR, experiment_name, item_name)
-    item_metrics_dir = os.path.join(METRICS_DIR, experiment_name, MODEL_NAME.replace("/", "_"), item_name)
+    item_metrics_dir = os.path.join(METRICS_DIR, experiment_name, MODEL_NAME.replace("/", "_"), item_name.replace(" ", "_"))
     
     os.makedirs(item_output_dir, exist_ok=True)
-    os.makedirs(item_metrics_dir, exist_ok=True)
 
     # מציאת המספר הסידורי הפנוי הבא
     version = 1
@@ -28,7 +27,7 @@ def setup_experiment_logger_and_dirs(item_name, experiment_name):
     
     log_filename = os.path.join(item_output_dir, f"{v_str}.log")
     save_path = os.path.join(item_metrics_dir, v_str)
-
+    os.makedirs(save_path, exist_ok=True)
     # הגדרת הלוגר
     logging.basicConfig(
         filename=log_filename, 
@@ -42,9 +41,6 @@ def setup_experiment_logger_and_dirs(item_name, experiment_name):
     return save_path, v_str
 
 def load_domain_items(products_file, domain):
-    """
-    קורא את קובץ המוצרים ומחזיר רשימה של שמות המוצרים השייכים לדומיין המבוקש
-    """
     products_df = pd.read_csv(products_file)
     domain_items = products_df[products_df["Domain"] == domain]["Name"].dropna().tolist()
     if not domain_items:
@@ -52,15 +48,9 @@ def load_domain_items(products_file, domain):
     return domain_items
 
 def format_prompt(prompt):
-    """
-    עוטף את הפרומפט בפורמט שהמודל מצפה לקבל
-    """
     return [{"instruction": prompt, "category": "yo"}]
 
 def get_train_test_split(prompts, test_size=0.2, seed=42):
-    """
-    מחלק את הפרומפטים לקבוצת אימון (חישוב הוקטור) וקבוצת בחינה (הערכה)
-    """
     random.seed(seed)
     prompts_shuffled = prompts.copy()
     random.shuffle(prompts_shuffled)
