@@ -1,0 +1,2 @@
+method,rank_delta,rr_delta,jaccard@5,pairwise_agreement,rank_delta_1,rank_delta_2,rr_delta_2
+actadd,-0.5,-0.0249999999999999,0.6666666666666666,0.9444444444444444,-1.0,0.0,0.0
