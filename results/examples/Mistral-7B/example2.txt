@@ -1,0 +1,35 @@
+Domain:Comedy Movies
+Target: No Hard Feelings
+Prompt:A person described as: {Persona} is looking for a {Domain}. The possible options are: {Cands}. Rank these {Domain} starting at the best option from 1 to 10.
+
+
+Baseline response: 
+The top 10 is:
+
+Here are the rankings from best to worst:
+
+1. **Barbie** (9/10)
+2. **Murder Mystery 2** (8.5/10)
+3. **Joy Ride** (8/10)
+4. **You People** (7.5/10) 
+5. **Dumb Money** (7/10)
+6. **No Hard Feelings** (6.5/10)
+7. **Old Dads** (6/10)
+8. **You Are So Not Invited To My Bat Mitzvah** (5.5/10)
+9. **Strays** (5/10)
+10. **Bottoms** (4/10)
+
+
+ActAdd response: 
+The top 10 is:
+
+1. **Barbie**
+2. **Murder Mystery 2**
+3. **No Hard Feelings**
+4. **You People**
+5. **Joy Ride**
+6. **Dumb Money**
+7. **Old Dads**
+8. **You Are So Not Invited To My Bat Mitzvah**
+9. **Strays**
+10. **Bottoms**

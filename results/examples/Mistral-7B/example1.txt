@@ -1,0 +1,37 @@
+Domain: Comedy Movies
+Target: Strays
+
+
+Baseline response: 
+The top 10 is:
+
+Here are the rankings from best to worst:
+
+1. **Barbie**
+2. **You People**
+3. **No Hard Feelings**
+4. **Joy Ride**
+5. **Dumb Money**
+6. **You Are So Not Invited To My Bat Mitzvah**
+7. **Strays**
+8. **Old Dads**
+9. **Murder Mystery 2**
+10. **Bottoms**
+
+
+Steered response: 
+The top 10 is:
+
+Here are the rankings from best to worst:
+
+1. **Barbie**
+2. **Joy Ride**
+3. **You People**
+4. **Strays**
+5. **No Hard Feelings**
+6. **Dumb Money**
+7. **You Are So Not Invited To My Bat Mitzvah**
+8. **Old Dads**:
+9. **Murder Mystery 2**
+10. **Bottoms**
+
