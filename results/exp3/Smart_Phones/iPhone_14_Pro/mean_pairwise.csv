@@ -1,7 +1,0 @@
-coeff,method,rank_delta,rr_delta,jaccard@5,pairwise_agreement
--0.05,actadd,0.216,0.02,0.945,0.955
--0.1,actadd,0.466,0.046,0.9,0.94
--0.15,actadd,0.716,0.077,0.84,0.92
--0.2,actadd,0.916,0.107,0.78,0.84
--0.25,actadd,-0.184,-0.015,0.71,0.619
--0.3,actadd,-0.784,-0.054,0.62,0.563
