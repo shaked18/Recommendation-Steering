@@ -8,22 +8,22 @@ We demonstrate that ASPP can significantly increase the recommendation rate for 
 and extend this capability to multiproduct promotion. Our findings confirm that ASPP is an effective,
 utility-preserving method to boost specific product recommendations, validating a new, inference-time market opportunity for LLM-based services
 
-## Running the project:
-# Cloning the repo:
+# Running the project:
+## Cloning the repo:
 ```bash
 git clone https://github.com/shaked18/Recommendation-Steering
 cd Recommendation-Steering
 ```
-# Setup and activate conda env:
+## Setup and activate conda env:
 ```bash
 conda env create -n Recommendation-steering python=3.10
 conda activate Recommendation-steering
 ```
-# installing dependencies:
+## installing dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-# running experiments:
+## running experiments:
 ```bash
 python main.py --exp [exp_num] --steer-domain [domain_name] --eval-domain [domain_name]
 ```
